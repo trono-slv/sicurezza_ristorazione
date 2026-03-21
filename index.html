@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valutazione Rischi Ristorazione - DVR Digitale</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #d4a373;
+            --secondary: #faedcd;
+            --danger: #e63946;
+            --warning: #f4a261;
+            --success: #2a9d8f;
+            --info: #457b9d;
+            --dark: #264653;
+            --light: #f8f9fa;
+            --border: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--info) 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        .company-info {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .company-info input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            color: white;
+            padding: 0.25rem;
+            margin: 0.25rem 0;
+            width: 200px;
+        }
+
+        .company-info input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .stat-card.danger { border-left-color: var(--danger); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        .stat-card.success { border-left-color: var(--success); }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--info));
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .controls {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #bc8a5f;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218078;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--dark);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .categories {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .category {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #fff 100%);
+            padding: 1.25rem 1.5rem;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .category-header:hover {
+            background: linear-gradient(135deg, #f0e6d2 0%, #fff 100%);
+        }
+
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .category-icon {
+            font-size: 1.5rem;
+        }
+
+        .category-count {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .risks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem;
+            display: none;
+        }
+
+        .category.expanded .risks-grid {
+            display: grid;
+        }
+
+        .risk-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: all 0.2s;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .risk-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .risk-card.evaluated {
+            border-left: 4px solid var(--success);
+        }
+
+        .risk-card.high-risk {
+            border-left: 4px solid var(--danger);
+            background: #fff5f5;
+        }
+
+        .risk-card.medium-risk {
+            border-left: 4px solid var(--warning);
+            background: #fffaf0;
+        }
+
+        .risk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .risk-title {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1rem;
+            line-height: 1.4;
+            padding-right: 1rem;
+        }
+
+        .risk-code {
+            background: #e9ecef;
+            color: #495057;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            white-space: nowrap;
+        }
+
+        .risk-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .evaluation-form {
+            display: grid;
+            gap: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed var(--border);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        select, input, textarea {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.1);
+        }
+
+        .risk-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .risk-level.low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .risk-level.medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .risk-level.high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .measures-box {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            border-left: 3px solid var(--info);
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+            font-size: 1.25rem;
+        }
+
+        .category.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .legend {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .legend-items {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .category .risks-grid { display: grid !important; }
+            body { background: white; }
+            .risk-card { break-inside: avoid; }
+        }
+
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; text-align: center; }
+            .form-row { grid-template-columns: 1fr; }
+            .risks-grid { grid-template-columns: 1fr; }
+            .filter-group { width: 100%; margin-left: 0; justify-content: center; }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .report-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .report-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .summary-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-red { background: var(--danger); color: white; }
+        .badge-yellow { background: var(--warning); color: white; }
+        .badge-green { background: var(--success); color: white; }
+        .badge-gray { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div>
+            <h1>🍽️ Valutazione dei Rischi in Ristorazione</h1>
+            <div class="subtitle">Documento di Valutazione dei Rischi (DVR) - Settore HORECA</div>
+        </div>
+        <div class="company-info">
+            <div style="margin-bottom: 0.5rem; font-size: 0.85rem; opacity: 0.8;">DATI AZIENDA</div>
+            <input type="text" id="companyName" placeholder="Nome Ristorante" style="display: block; margin-bottom: 0.5rem;">
+            <input type="text" id="companyAddress" placeholder="Indirizzo">
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- Dashboard Stats -->
+    <div class="dashboard">
+        <div class="stat-card">
+            <div class="stat-number" id="totalCategories">6</div>
+            <div class="stat-label">Aree di Rischio</div>
+        </div>
+        <div class="stat-card danger">
+            <div class="stat-number" id="totalRisks">48</div>
+            <div class="stat-label">Rischi Identificati</div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-number" id="evaluatedRisks">0</div>
+            <div class="stat-label">Rischi Valutati</div>
+        </div>
+        <div class="stat-card success">
+            <div class="stat-number" id="progressPercent">0%</div>
+            <div class="stat-label">Progresso</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-title">Legenda Valutazione Rischio</div>
+        <div class="legend-items">
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--success)"></div>
+                <span>Rischio Basso (1-4)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--warning)"></div>
+                <span>Rischio Medio (5-9)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: var(--danger)"></div>
+                <span>Rischio Alto (10-16)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls no-print">
+        <button class="btn btn-primary" onclick="expandAll()">
+            <span>📂</span> Espandi Tutto
+        </button>
+        <button class="btn btn-outline" onclick="collapseAll()">
+            <span>📁</span> Collassa Tutto
+        </button>
+        <button class="btn btn-success" onclick="generateReport()">
+            <span>📊</span> Genera Report
+        </button>
+        <button class="btn btn-outline" onclick="window.print()">
+            <span>🖨️</span> Stampa
+        </button>
+        
+        <div class="filter-group">
+            <select id="filterSelect" onchange="filterRisks(this.value)">
+                <option value="all">Tutti i rischi</option>
+                <option value="high">Solo rischi alti</option>
+                <option value="medium">Solo rischi medi</option>
+                <option value="low">Solo rischi bassi</option>
+                <option value="unevaluated">Non valutati</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories" id="categoriesContainer">
+        <!-- Categories will be populated by JavaScript -->
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal" id="reportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Report Valutazione Rischi</h2>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div id="reportContent"></div>
+        <div class="no-print" style="margin-top: 2rem; text-align: center;">
+            <button class="btn btn-primary" onclick="window.print()">Stampa Report</button>
+            <button class="btn btn-outline" onclick="closeModal()">Chiudi</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Database dei rischi per ristorazione
+const riskCategories = [
+    {
+        id: 'cucina',
+        name: 'Area Cottura e Preparazione',
+        icon: '👨‍🍳',
+        risks: [
+            {
+                id: 'C01',
+                title: 'Scottature da contatto con superfici calde',
+                description: 'Contatto accidentale con piastre, forni, friggitrici, pentole bollenti o liquidi caldi',
+                probability: 4,
+                severity: 3,
+                measures: 'Utilizzo guanti termoresistenti, segnaletica "ATTENZIONE CALORE", formazione personale, manutenzione attrezzature'
+            },
+            {
+                id: 'C02',
+                title: 'Tagli da coltelli e attrezzature',
+                description: 'Utilizzo di coltelli affilati, mandolini, tritacarne, robot da cucina',
+                probability: 4,
+                severity: 2,
+                measures: 'Formazione corretto utilizzo, guanti anti-taglio, controlli attrezzature, primo soccorso immediato'
+            },
+            {
+                id: 'C03',
+                title: 'Incendi da grassi e fiamme libere',
+                description: 'Accumulo di grassi nelle cappe, fiamme libere sui fornelli, surriscaldamento olio',
+                probability: 3,
+                severity: 5,
+                measures: 'Pulizia periodica cappe, estintori specifici per grassi (classe F), coperture anti-fiamma, manutenzione impianti'
+            },
+            {
+                id: 'C04',
+                title: 'Scivolamenti su superfici unte/bagnate',
+                description: 'Cadute per pavimenti bagnati o unti in prossimità delle zone di cottura',
+                probability: 4,
+                severity: 3,
+                measures: 'Tappeti antiscivolo, scarpe antinfortunistiche, pulizia immediata, segnaletica "PAVIMENTO BAGNATO"'
+            },
+            {
+                id: 'C05',
+                title: 'Rischio elettrico da elettrodomestici',
+                description: 'Contatto con apparecchiature elettriche in ambienti umidi, cavi danneggiati',
+                probability: 2,
+                severity: 5,
+                measures: 'Impianti IP55 in cucina, verifiche periodiche, messa a terra, non toccare con mani bagnate'
+            },
+            {
+                id: 'C06',
+                title: 'Sollevamento carichi pesanti (pentole, sacchi)',
+                description: 'Movimentazione pentole piene, sacchi di farina, casse di verdura',
+                probability: 3,
+                severity: 3,
+                measures: 'Carrelli per trasporto, sollevamento corretto (tecnica), limitazione pesi (25kg max), rotazione compiti'
+            },
+            {
+                id: 'C07',
+                title: 'Esposizione al calore e stress termico',
+                description: 'Lavoro prossimo a forni e piastre calde in ambienti poco ventilati',
+                probability: 4,
+                severity: 2,
+                measures: 'Impianti di aspirazione, pause idratanti, rotazione turni, abbigliamento traspirante'
+            },
+            {
+                id: 'C08',
+                title: 'Contaminazione incrociata alimentare',
+                description: 'Contatto tra alimenti crudi e cotti, batteri (Salmonella, Listeria)',
+                probability: 3,
+                severity: 4,
+                measures: 'Taglieri colorati, igiene mani, flusso unidirezionale, HACCP, termometri per temperature'
+            }
+        ]
+    },
+    {
+        id: 'sala',
+        name: 'Area Sala e Servizio',
+        icon: '🍽️',
+        risks: [
+            {
+                id: 'S01',
+                title: 'Cadute scivolamenti e inciampi',
+                description: 'Scivolamento su liquidi versati, cavi elettrici, tovaglie striscianti',
+                probability: 4,
+                severity: 3,
+                measures: 'Controllo continuo pavimenti, scarpe antiscivolo, sistema "pulisci-subito", illuminazione adeguata'
+            },
+            {
+                id: 'S02',
+                title: 'Movimentazione manuale carichi',
+                description: 'Trasporto vassoi pesanti, casse di bevande, scorte di bicchiereria',
+                probability: 3,
+                severity: 3,
+                measures: 'Limitazione peso vassoi, carrelli di servizio, tecnica corretta sollevamento, 2 persone per carichi pesanti'
+            },
+            {
+                id: 'S03',
+                title: 'Tagli da vetri e ceramiche rotte',
+                description: 'Rottura bicchieri, piatti, caraffe durante il servizio o lavaggio',
+                probability: 3,
+                severity: 2,
+                measures: 'Attrezzature in materiale infrangibile dove possibile, scope e paletta per vetri, guanti per raccolta'
+            },
+            {
+                id: 'S04',
+                title: 'Stress lavoro correlato (fatica)',
+                description: 'Ore di punta, rapporto clienti/camerieri, multitasking intenso',
+                probability: 4,
+                severity: 3,
+                measures: 'Turni equilibrati, pause regolamentari, formazione gestione stress, comunicazione team'
+            },
+            {
+                id: 'S05',
+                title: 'Esposizione al rumore',
+                description: 'Ambiente affollato, musica, voci, cucina aperta (>85 dB)',
+                probability: 3,
+                severity: 2,
+                measures: 'Isolamento acustico, rotazione turni, protezioni individuali se necessario, manutenzione impianti audio'
+            },
+            {
+                id: 'S06',
+                title: 'Agizioni da parte di clienti',
+                description: 'Clienti aggressivi, furti, atti vandalici',
+                probability: 2,
+                severity: 3,
+                measures: 'Formazione gestione conflitti, telecamere, pulsante allarme, protocollo emergenze'
+            },
+            {
+                id: 'S07',
+                title: 'Postura scorretta e movimenti ripetitivi',
+                description: 'Portare piatti con un braccio solo, chinarsi ripetutamente sui tavoli',
+                probability: 4,
+                severity: 2,
+                measures: 'Formazione posture corrette, bilanciamento carichi, vassoi ergonomici, esercizi stretching'
+            },
+            {
+                id: 'S08',
+                title: 'Esposizione a sostanze allergizzanti',
+                description: 'Contatto con alimenti allergeni (glutine, arachidi, crostacei)',
+                probability: 2,
+                severity: 4,
+                measures: 'Formazione allergeni, DPI (guanti), procedure separate per allergie, kit emergenza'
+            }
+        ]
+    },
+    {
+        id: 'magazzino',
+        name: 'Magazzino Alimentare e Celle',
+        icon: '📦',
+        risks: [
+            {
+                id: 'M01',
+                title: 'Esposizione al freddo (celle frigorifere)',
+                description: 'Ingresso in celle refrigerate (-18°C / +4°C) per prelievi',
+                probability: 4,
+                severity: 2,
+                measures: 'Abbigliamento termico, limitazione tempi permanenza (20min max), monitoraggio temperature, allarmi'
+            },
+            {
+                id: 'M02',
+                title: 'Cadute dall\'alto (stoccaggio)',
+                description: 'Caduta oggetti da scaffali alti, caduta addetto durante prelievi',
+                probability: 3,
+                severity: 4,
+                measures: 'Scaffalature certificate, scale con piedini antiscivolo, non arrampicarsi, stoccaggio peso basso'
+            },
+            {
+                id: 'M03',
+                title: 'Movimentazione carichi pesanti',
+                description: 'Sollevamento casse bevande, sacchi, scatole scorte',
+                probability: 4,
+                severity: 3,
+                measures: 'Transpallet/carrelli, stoccaggio a 60cm da terra, pile stabili, sollevamento gambe non schiena'
+            },
+            {
+                id: 'M04',
+                title: 'Folgorazione da impianti frigo',
+                description: 'Contatto con unità motori, umidità condensa e impianti elettrici',
+                probability: 2,
+                severity: 5,
+                measures: 'Manutenzione programmata, tenuta stagna locali, interruttori differenziali, solo personale autorizzato'
+            },
+            {
+                id: 'M05',
+                title: 'Intossicazione da anidride carbonica',
+                description: 'Perdite da celle refrigerate con CO2 o ammoniaca, ambienti non ventilati',
+                probability: 2,
+                severity: 5,
+                measures: 'Rilevatori gas, ventilazione forzata, allarmi, procedure evacuazione, manutenzione impianti'
+            },
+            {
+                id: 'M06',
+                title: 'Scivolamenti su pavimenti bagnati',
+                description: 'Condensa, pulizia pavimenti, perdite da imballaggi',
+                probability: 3,
+                severity: 3,
+                measures: 'Pavimenti antiscivolo, aspirazione condensa, segnaletica, scarpe antinfortunistiche'
+            },
+            {
+                id: 'M07',
+                title: 'Infestazioni e contaminazioni',
+                description: 'Presenza insetti, roditori, muffe su alimenti stoccati',
+                probability: 2,
+                severity: 4,
+                measures: 'Derattizzazione periodica, controllo temperature, FIFO (primo entrato primo uscito), sigillatura porte'
+            },
+            {
+                id: 'M08',
+                title: 'Caduta posteriore (trauma)',
+                description: 'Scivolamento all\'indietro durante spostamento carichi',
+                probability: 3,
+                severity: 3,
+                measures: 'Formazione, pulizia immediata perdite, visibilità retro scaffali, calzature antiscivolo'
+            }
+        ]
+    },
+    {
+        id: 'pulizia',
+        name: 'Pulizia e Sanificazione',
+        icon: '🧼',
+        risks: [
+            {
+                id: 'P01',
+                title: 'Contatto con sostanze chimiche pericolose',
+                description: 'Detersivi, sgrassatori, disinfettanti, ipoclorito di sodio',
+                probability: 3,
+                severity: 3,
+                measures: 'DPI (guanti, occhiali), etichette chiare, scheda di sicurezza, diluizione corretta, aerazione'
+            },
+            {
+                id: 'P02',
+                title: 'Scivolamenti da pavimenti bagnati',
+                description: 'Pavimenti lavati ma ancora umidi, segnaletica mancante',
+                probability: 4,
+                severity: 3,
+                measures: 'Pulizia fuori orario, segnaletica "PAVIMENTO BAGNATO", asciugatura, scarpe antiscivolo'
+            },
+            {
+                id: 'P03',
+                title: 'Posture scorrette durante pulizia',
+                description: 'Chinarsi per pulire sotto tavoli, strofinare pavimenti manualmente',
+                probability: 4,
+                severity: 2,
+                measures: 'Scope con manico telescopico, utilizzo lavasciuga, rotazione compiti, pause'
+            },
+            {
+                id: 'P04',
+                title: 'Inalazione vapori chimici',
+                description: 'Utilizzo prodotti aggressivi in ambienti chiusi senza aerazione',
+                probability: 3,
+                severity: 3,
+                measures: 'Aerazione forzata, mascherine FFP2, prodotti eco-biologici, limitazione tempi esposizione'
+            },
+            {
+                id: 'P05',
+                title: 'Scosse elettriche da macchine pulizia',
+                description: 'Utilizzo lavasciuga, aspirapolvere industriali in ambienti umidi',
+                probability: 2,
+                severity: 4,
+                measures: 'Verifica isolamento cavi, scarpe antistatiche, non utilizzare con mani bagnate, manutenzione'
+            },
+            {
+                id: 'P06',
+                title: 'Contatto biologico con rifiuti',
+                description: 'Manipolazione rifiuti organici, batteri, residui alimentari',
+                probability: 3,
+                severity: 3,
+                measures: 'Guanti monouso, lavaggio mani, contenitori pedalabili, svuotamento frequente'
+            }
+        ]
+    },
+    {
+        id: 'logistica',
+        name: 'Logistica e Ricevimento Merci',
+        icon: '🚚',
+        risks: [
+            {
+                id: 'L01',
+                title: 'Investimento da mezzi interni di movimentazione',
+                description: 'Transpallet manuali ed elettrici, carrelli elevatori',
+                probability: 2,
+                severity: 5,
+                measures: 'Percorsi pedonali delimitati, segnaletica orizzontale, formazione carrellisti, DPI (casco, giubbotto)'
+            },
+            {
+                id: 'L02',
+                title: 'Cadute durante scarico merci',
+                description: 'Caduta dal bordo del cassone, scivolamento su bancali',
+                probability: 3,
+                severity: 4,
+                measures: 'Piattaforme di carico, paratie laterali, scarpe antiscivolo, non arrampicarsi sui mezzi'
+            },
+            {
+                id: 'L03',
+                title: 'Sollevamento pesi eccessivi',
+                description: 'Scarico manuale casse bevande, sacchi farina (25kg+)',
+                probability: 4,
+                severity: 3,
+                measures: 'Sistema "2 persone", transpallet, limitazione pesi, formazione manuale handling'
+            },
+            {
+                id: 'L04',
+                title: 'Urto contro oggetti mobili',
+                description: 'Collisione con porte a battente, carrelli, porte frigo',
+                probability: 3,
+                severity: 2,
+                measures: 'Mirini su porte, chiudiporta rallentati, delimitazione aree, illuminazione'
+            }
+        ]
+    },
+    {
+        id: 'amministrazione',
+        name: 'Ufficio e Amministrazione',
+        icon: '💻',
+        risks: [
+            {
+                id: 'A01',
+                title: 'Disturbi muscolo-scheletrici (DMS)',
+                description: 'Postura seduta prolungata, schiena, collo, polsi',
+                probability: 4,
+                severity: 2,
+                measures: 'Sedie ergonomiche, monitor a altezza occhi, pause attive, tastiera/mouse ergonomici'
+            },
+            {
+                id: 'A02',
+                title: 'Affaticamento visivo (CVS)',
+                description: 'Sindrome da computer, schermi, illuminazione insufficiente',
+                probability: 4,
+                severity: 2,
+                measures: 'Pause 20-20-20, regolazione luminosità, filtri luce blu, visite oculistiche'
+            },
+            {
+                id: 'A03',
+                title: 'Stress da contatto con il pubblico',
+                description: 'Gestione prenotazioni, reclami, telefonate intensive',
+                probability: 3,
+                severity: 3,
+                measures: 'Formazione gestione cliente difficile, supporto manager, rotazione mansioni'
+            },
+            {
+                id: 'A04',
+                title: 'Rischio elettrico da impianti',
+                description: 'Sovraccarico prese multiple, cavi sotto tappeti,UPS',
+                probability: 2,
+                severity: 3,
+                measures: 'Verifica impianti, ciabatte con fusibili, non sovraccaricare prese, manutenzione'
+            }
+        ]
+    }
+];
+
+// State
+let evaluations = {};
+let currentFilter = 'all';
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    renderCategories();
+    loadSavedData();
+});
+
+function renderCategories() {
+    const container = document.getElementById('categoriesContainer');
+    container.innerHTML = riskCategories.map(category => `
+        <div class="category" data-category="${category.id}">
+            <div class="category-header" onclick="toggleCategory('${category.id}')">
+                <div class="category-title">
+                    <span class="category-icon">${category.icon}</span>
+                    ${category.name}
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="category-count">${category.risks.length} rischi</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="risks-grid" id="grid-${category.id}">
+                ${category.risks.map(risk => renderRiskCard(risk, category.id)).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderRiskCard(risk, categoryId) {
+    const eval = evaluations[risk.id] || {};
+    const isEvaluated = eval.probability && eval.severity;
+    const riskLevel = isEvaluated ? calculateRiskLevel(eval.probability, eval.severity) : null;
+    const levelClass = riskLevel ? riskLevel.toLowerCase() : '';
+    const levelText = riskLevel ? `Rischio ${riskLevel}` : 'Da valutare';
+    
+    return `
+        <div class="risk-card ${isEvaluated ? 'evaluated' : ''} ${levelClass}" 
+             data-risk="${risk.id}" 
+             data-level="${riskLevel || 'none'}"
+             id="card-${risk.id}">
+            <div class="risk-header">
+                <div class="risk-title">${risk.title}</div>
+                <span class="risk-code">${risk.id}</span>
+            </div>
+            <div class="risk-description">${risk.description}</div>
+            
+            <div class="evaluation-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Probabilità (1-4)</label>
+                        <select onchange="updateEvaluation('${risk.id}', 'probability', this.value)" id="prob-${risk.id}">
+                            <option value="">Seleziona...</option>
+                            <option value="1" ${eval.probability == 1 ? 'selected' : ''}>1 - Bassa</option>
+                            <option value="2" ${eval.probability == 2 ? 'selected' : ''}>2 - Media</option>
+                            <option value="3" ${eval.probability == 3 ? 'selected' : ''}>3 - Alta</option>
+                            <option value="4" ${eval.probability == 4 ? 'selected' : ''}>4 - Molto Alta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Gravità (1-4)</label>
+                        <select onchange="updateEvaluation('${risk.id}', 'severity', this.value)" id="sev-${risk.id}">
+                            <option value="">Seleziona...</option>
+                            <option value="1" ${eval.severity == 1 ? 'selected' : ''}>1 - Lieve</option>
+                            <option value="2" ${eval.severity == 2 ? 'selected' : ''}>2 - Moderata</option>
+                            <option value="3" ${eval.severity == 3 ? 'selected' : ''}>3 - Grave</option>
+                            <option value="4" ${eval.severity == 4 ? 'selected' : ''}>4 - Molto Grave</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group full">
+                    <label>Misure di Prevenzione Adottate</label>
+                    <textarea rows="2" placeholder="Descrivi le misure adottate..." 
+                        onchange="updateEvaluation('${risk.id}', 'measures', this.value)"
+                        id="meas-${risk.id}">${eval.measures || risk.measures}</textarea>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="risk-level ${levelClass}" id="level-${risk.id}">
+                        ${levelText}
+                    </div>
+                    ${isEvaluated ? `<button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="clearEvaluation('${risk.id}')">Cancella</button>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function calculateRiskLevel(prob, sev) {
+    const score = prob * sev;
+    if (score <= 4) return 'Basso';
+    if (score <= 9) return 'Medio';
+    return 'Alto';
+}
+
+function updateEvaluation(riskId, field, value) {
+    if (!evaluations[riskId]) {
+        evaluations[riskId] = {};
+    }
+    evaluations[riskId][field] = value;
+    
+    // Recalculate if both probability and severity are set
+    const eval = evaluations[riskId];
+    if (eval.probability && eval.severity) {
+        const level = calculateRiskLevel(eval.probability, eval.severity);
+        const card = document.getElementById(`card-${riskId}`);
+        const levelDiv = document.getElementById(`level-${riskId}`);
+        
+        // Update visual classes
+        card.classList.remove('low', 'medium', 'high', 'evaluated');
+        card.classList.add('evaluated', level.toLowerCase());
+        card.dataset.level = level;
+        
+        levelDiv.textContent = `Rischio ${level}`;
+        levelDiv.className = `risk-level ${level.toLowerCase()}`;
+        
+        // Add clear button if not present
+        if (!levelDiv.nextElementSibling || !levelDiv.nextElementSibling.onclick) {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-outline';
+            btn.style.cssText = 'padding: 0.25rem 0.5rem; font-size: 0.8rem;';
+            btn.textContent = 'Cancella';
+            btn.onclick = () => clearEvaluation(riskId);
+            levelDiv.parentNode.appendChild(btn);
+        }
+    }
+    
+    updateStats();
+    saveData();
+}
+
+function clearEvaluation(riskId) {
+    delete evaluations[riskId];
+    const risk = findRiskById(riskId);
+    const category = findCategoryByRiskId(riskId);
+    const card = document.getElementById(`card-${riskId}`);
+    const grid = document.getElementById(`grid-${category.id}`);
+    const index = category.risks.findIndex(r => r.id === riskId);
+    
+    // Re-render just this card
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = renderRiskCard(risk, category.id);
+    card.replaceWith(tempDiv.firstElementChild);
+    
+    updateStats();
+    saveData();
+}
+
+function findRiskById(id) {
+    for (const cat of riskCategories) {
+        const risk = cat.risks.find(r => r.id === id);
+        if (risk) return risk;
+    }
+    return null;
+}
+
+function findCategoryByRiskId(id) {
+    return riskCategories.find(cat => cat.risks.some(r => r.id === id));
+}
+
+function updateStats() {
+    const total = riskCategories.reduce((acc, cat) => acc + cat.risks.length, 0);
+    const evaluated = Object.keys(evaluations).filter(k => evaluations[k].probability && evaluations[k].severity).length;
+    const percent = Math.round((evaluated / total) * 100);
+    
+    document.getElementById('evaluatedRisks').textContent = evaluated;
+    document.getElementById('progressPercent').textContent = percent + '%';
+    document.getElementById('progressBar').style.width = percent + '%';
+}
+
+function toggleCategory(id) {
+    const cat = document.querySelector(`[data-category="${id}"]`);
+    cat.classList.toggle('expanded');
+}
+
+function expandAll() {
+    document.querySelectorAll('.category').forEach(c => c.classList.add('expanded'));
+}
+
+function collapseAll() {
+    document.querySelectorAll('.category').forEach(c => c.classList.remove('expanded'));
+}
+
+function filterRisks(filter) {
+    currentFilter = filter;
+    const cards = document.querySelectorAll('.risk-card');
+    
+    cards.forEach(card => {
+        const level = card.dataset.level;
+        const isEvaluated = card.classList.contains('evaluated');
+        
+        let show = false;
+        switch(filter) {
+            case 'all': show = true; break;
+            case 'high': show = level === 'Alto'; break;
+            case 'medium': show = level === 'Medio'; break;
+            case 'low': show = level === 'Basso'; break;
+            case 'unevaluated': show = !isEvaluated; break;
+        }
+        
+        card.style.display = show ? 'block' : 'none';
+    });
+    
+    // Expand categories with visible cards
+    document.querySelectorAll('.category').forEach(cat => {
+        const visibleCards = cat.querySelectorAll('.risk-card[style*="block"]').length;
+        if (visibleCards > 0 && filter !== 'all') {
+            cat.classList.add('expanded');
+        }
+    });
+}
+
+function generateReport() {
+    const company = document.getElementById('companyName').value || 'Ristorante';
+    const address = document.getElementById('companyAddress').value || '';
+    const date = new Date().toLocaleDateString('it-IT');
+    
+    let highRisks = 0, mediumRisks = 0, lowRisks = 0, unevaluated = 0;
+    let riskRows = '';
+    
+    riskCategories.forEach(cat => {
+        cat.risks.forEach(risk => {
+            const eval = evaluations[risk.id] || {};
+            let level = '-';
+            let score = '-';
+            let measures = eval.measures || risk.measures;
+            
+            if (eval.probability && eval.severity) {
+                score = eval.probability * eval.severity;
+                level = calculateRiskLevel(eval.probability, eval.severity);
+                if (level === 'Alto') highRisks++;
+                else if (level === 'Medio') mediumRisks++;
+                else lowRisks++;
+            } else {
+                unevaluated++;
+            }
+            
+            const levelClass = level === 'Alto' ? 'badge-red' : level === 'Medio' ? 'badge-yellow' : level === 'Basso' ? 'badge-green' : 'badge-gray';
+            
+            riskRows += `
+                <tr>
+                    <td>${risk.id}</td>
+                    <td><strong>${cat.name}</strong><br><small>${risk.title}</small></td>
+                    <td><span class="badge ${levelClass}">${level}</span></td>
+                    <td>${score}</td>
+                    <td>${measures.substring(0, 50)}${measures.length > 50 ? '...' : ''}</td>
+                </tr>
+            `;
+        });
+    });
+    
+    const reportHTML = `
+        <div class="report-section">
+            <h3>Informazioni Generali</h3>
+            <p><strong>Azienda:</strong> ${company}</p>
+            <p><strong>Indirizzo:</strong> ${address}</p>
+            <p><strong>Data valutazione:</strong> ${date}</p>
+            <p><strong>Settore:</strong> Ristorazione (HORECA)</p>
+        </div>
+        
+        <div class="report-section">
+            <h3>Sintesi Rischi</h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1rem 0;">
+                <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 2rem; color: var(--danger); font-weight: bold;">${highRisks}</div>
+                    <div style="font-size: 0.9rem; color: #6c757d;">Rischi Alti</div>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 2rem; color: var(--warning); font-weight: bold;">${mediumRisks}</div>
+                    <div style="font-size: 0.9rem; color: #6c757d;">Rischi Medi</div>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 2rem; color: var(--success); font-weight: bold;">${lowRisks}</div>
+                    <div style="font-size: 0.9rem; color: #6c757d;">Rischi Bassi</div>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 2rem; color: #6c757d; font-weight: bold;">${unevaluated}</div>
+                    <div style="font-size: 0.9rem; color: #6c757d;">Da valutare</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="report-section">
+            <h3>Dettaglio Valutazioni</h3>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Codice</th>
+                        <th>Rischio</th>
+                        <th>Livello</th>
+                        <th>Punteggio</th>
+                        <th>Misure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${riskRows}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="report-section" style="margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--border);">
+            <h3>Documentazione</h3>
+            <p>Il presente documento costituisce la Valutazione dei Rischi ai sensi del D.Lgs. 81/2008 (Titolo I, Capo II) per il settore ristorazione.</p>
+            <p style="margin-top: 1rem;"><strong>Responsabile della valutazione:</strong> _______________________</p>
+            <p style="margin-top: 0.5rem;"><strong>Data:</strong> ${date} &nbsp;&nbsp;&nbsp; <strong>Firma:</strong> _______________________</p>
+        </div>
+    `;
+    
+    document.getElementById('reportContent').innerHTML = reportHTML;
+    document.getElementById('reportModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('reportModal').classList.remove('active');
+}
+
+function saveData() {
+    localStorage.setItem('ristorazioneDVR', JSON.stringify({
+        evaluations: evaluations,
+        company: {
+            name: document.getElementById('companyName').value,
+            address: document.getElementById('companyAddress').value
+        }
+    }));
+}
+
+function loadSavedData() {
+    const saved = localStorage.getItem('ristorazioneDVR');
+    if (saved) {
+        const data = JSON.parse(saved);
+        evaluations = data.evaluations || {};
+        if (data.company) {
+            document.getElementById('companyName').value = data.company.name || '';
+            document.getElementById('companyAddress').value = data.company.address || '';
+        }
+        // Re-render to show saved evaluations
+        renderCategories();
+        updateStats();
+    }
+    
+    // Expand first category by default
+    document.querySelector('.category').classList.add('expanded');
+}
+
+// Close modal on outside click
+window.onclick = function(event) {
+    const modal = document.getElementById('reportModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+</script>
+
+</body>
+</html>
