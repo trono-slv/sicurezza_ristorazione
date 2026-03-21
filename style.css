@@ -1,0 +1,13 @@
+body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f4f4f4; color: #333; }
+header { background: #2c3e50; color: white; text-align: center; padding: 1rem; }
+.subtitle { font-size: 0.9rem; }
+nav ul { list-style: none; padding: 0; background: #34495e; }
+nav li { display: inline-block; }
+nav a { color: white; padding: 1rem; text-decoration: none; display: block; }
+.category { margin: 2rem; padding: 1rem; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.risk { border-bottom: 1px solid #ddd; cursor: pointer; padding: 1rem 0; }
+.risk h3 { margin: 0; color: #e74c3c; }
+.details { display: none; padding: 1rem; background: #ecf0f1; border-radius: 5px; margin-top: 1rem; }
+.details p { margin: 0.5rem 0; }
+footer { background: #2c3e50; color: white; text-align: center; padding: 1rem; margin-top: 2rem; }
+@media (max-width: 768px) { nav li { display: block; } }
